@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <script src="https://checkout.reepay.com/checkout.js"></script>
+</head>
+
+<body>
+
+    <div id="rp_container" style="min-width: 300px; width: 100%; height: 600px; margin: auto;"></div>
+
+    <script>
+        // Print.postMessage('Hello World being called from Javascript code');
+
+        window.onload = function () {
+
+            var url = (window.location != window.parent.location)
+                ? document.referrer
+                : document.location.href;
+
+            console.log(document.getElementById("rp_container"));
+
+            var rp = new Reepay.WindowCheckout("cs_2bb685841559501c00dd233846bc07c1", { html_element: "rp_container" });
+            var iframeId = rp.iframe_id;
+            console.log(iframeId)
+
+            rp.addEventHandler(Reepay.Event.Accept, function (data) {
+                console.log(data);
+                console.log('success');
+            });
+
+            rp.addEventHandler(Reepay.Event.Error, function (data) {
+                console.log(data);
+                console.log('error');
+            });
+
+            rp.addEventHandler(Reepay.Event.Close, function () {
+                console.log('close');
+            });
+
+        };
+    </script>
+
+</body>
+
+</html>
