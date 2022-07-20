@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:darq/darq.dart';
 import 'package:flutter/material.dart';
 import 'package:reepay_demo_app/checkout/index.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -11,16 +12,14 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../domain/models/bike_model.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  var quantities = {};
-  CheckoutScreen({Key? key, required this.quantities}) : super(key: key);
+  CheckoutScreen({Key? key}) : super(key: key);
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-  final Completer<WebViewController> _controller =
-      Completer<WebViewController>();
+  final Completer<WebViewController> _controller = Completer<WebViewController>();
 
   late Future<String> sessionData;
 
@@ -31,20 +30,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   List<Map<String, Object>> orderlines() {
-    if (widget.quantities.isEmpty) {
+    if (CheckoutProvider().quantities.isEmpty) {
       return [
         {"amount": 10000, "ordertext": "Test checkout", "quantity": 2},
       ];
     }
 
     List<Map<String, Object>> orderLines = [];
-    var seen = <Bike>{};
-    CheckoutProvider().cart.where((bike) => seen.add(bike)).toList();
-    for (var element in seen) {
+    List<Bike> uniqueBikes = CheckoutProvider().cart.distinct((d) => d.id).toList();
+    for (var element in uniqueBikes) {
       Map<String, Object> order = {
         "ordertext": element.name,
         "amount": element.amount * 100,
-        "quantity": widget.quantities[element.name],
+        "quantity": CheckoutProvider().quantities[element.name],
       };
       orderLines.add(order);
     }
@@ -57,8 +55,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       Uri.parse("https://checkout-api.reepay.com/v1/session/charge"),
     );
 
-    String encoded =
-        base64.encode(utf8.encode("priv_b3aae30490f8f7792fc0ce659b2380f4"));
+    String encoded = base64.encode(utf8.encode("priv_b3aae30490f8f7792fc0ce659b2380f4"));
     request.headers.set("content-type", "application/json");
     request.headers.set("accept", "application/json");
     request.headers.set("Authorization", encoded);
@@ -70,17 +67,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       "order": {
         "handle": 'order-test-$randomOrderNumber',
         "customer": {
-          "handle": 'customer-123',
-          "first_name": 'John',
-          "last_name": 'Doe',
-          "phone": '+4511112222'
+          "handle": CheckoutProvider().customerHandle,
+          // "first_name": 'John',
+          // "last_name": 'Doe',
+          // "phone": '+4511112222',
         },
         "order_lines": orderlines,
       },
-      "accept_url":
-          'https://sandbox.reepay.com/api/httpstatus/200/accept/order-$randomOrderNumber',
-      "cancel_url":
-          'https://sandbox.reepay.com/api/httpstatus/200/decline/order-$randomOrderNumber/'
+      "accept_url": 'https://sandbox.reepay.com/api/httpstatus/200/accept/order-$randomOrderNumber',
+      "cancel_url": 'https://sandbox.reepay.com/api/httpstatus/200/decline/order-$randomOrderNumber/'
     };
 
     request.add(utf8.encode(json.encode(data)));
@@ -106,31 +101,34 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 Map<String, dynamic> response = jsonDecode(snapshot.data);
                 // print(response);
                 return WebView(
-                  initialUrl: Uri.dataFromString(getHtmlData(response["id"]),
-                          mimeType: 'text/html')
-                      .toString(),
+                  initialUrl: Uri.dataFromString(getHtmlData(response["id"]), mimeType: 'text/html').toString(),
                   // initialUrl: response["url"],
                   javascriptMode: JavascriptMode.unrestricted,
-                  onWebViewCreated:
-                      (WebViewController webViewController) async {
+                  onWebViewCreated: (WebViewController webViewController) async {
                     _controller.complete(webViewController);
                   },
                   navigationDelegate: (NavigationRequest request) {
-                    if (request.url !=
-                        Uri.dataFromString(getHtmlData(response["id"]),
-                                mimeType: 'text/html')
-                            .toString()) {
-                      print(request.url);
+                    if (request.url != Uri.dataFromString(getHtmlData(response["id"]), mimeType: 'text/html').toString()) {
+                      print('req: ${request.url}');
                     }
 
                     if (request.url.contains("decline")) {
                       print("user declined");
+                      // Navigator.of(context).popUntil((route) => route.isFirst);
                       setState(() {
                         CheckoutProvider().setCart([]);
                       });
-                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
                       return NavigationDecision.prevent;
                     } else if (request.url.contains("accept")) {
+                      CheckoutService()
+                          .updateCustomer(
+                            customerHandle: CheckoutProvider().customerHandle,
+                            customer: CheckoutProvider().customer,
+                          )
+                          .then(
+                            (value) => print('update status: $value'),
+                          );
                       setState(() {
                         CheckoutProvider().setCart([]);
                       });

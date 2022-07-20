@@ -5,9 +5,6 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:localstore/localstore.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:reepay_demo_app/checkout/index.dart';
-import 'package:reepay_demo_app/checkout/screens/completed_screen.dart';
-import 'package:reepay_demo_app/checkout/screens/local_checkout_screen.dart';
-import 'package:darq/darq.dart';
 
 import 'checkout/domain/models/bike_model.dart';
 
@@ -27,18 +24,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Reepay Checkout Demo',
       theme: ThemeData(
         primarySwatch: Colors.amber,
       ),
       home: const MyHomePage(title: 'Bike Shop'),
       routes: {
-        '/checkout': (context) => CheckoutScreen(
-              quantities: {},
-            ),
+        '/checkout': (context) => CheckoutScreen(),
         '/android-checkout': (context) => AndroidCheckoutScreen(),
         '/local-checkout': (context) => LocalCheckout(),
         '/completed': (context) => CompletedScreen(),
+        '/customer-info': (context) => CustomerInfoScreen(),
       },
     );
   }
@@ -56,14 +53,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late Future<List<Bike>> bikes;
   late List<Bike> cart;
+  late CheckoutProvider provider;
+  late dynamic quantities;
 
   @override
   void initState() {
     super.initState();
     bikes = CheckoutService().getBikeProducts();
-    CheckoutProvider provider = CheckoutProvider();
+    provider = CheckoutProvider();
     provider.getCart().then((value) => setState(() {}));
     cart = provider.cart;
+    quantities = provider.getQuantities(cart);
   }
 
   @override
@@ -143,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: Icon(Icons.help_center),
               ),
               Tab(
-                text: "Cart ${cart.length}",
+                text: "Cart ${provider.cart.length}",
                 icon: Icon(Icons.shopping_basket),
               ),
             ],
@@ -154,94 +154,80 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget cartPage() {
-    var quantities = {};
-    List<Bike> uniqueBikes = cart.distinct((d) => d.id).toList();
-
-    cart.forEach(
-      ((item) => {
-            if (quantities[item.name] == null)
-              {quantities[item.name] = 1}
-            else
-              {quantities[item.name]++}
-          }),
-    );
-
-    print("quantities: $quantities");
-
-    for (var item in cart) {
-      item.quantity = quantities[item.name];
-    }
-
-    int total = 0;
-    for (var item in uniqueBikes) {
-      total = total + (item.quantity * item.amount);
-    }
-
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => {
-          if (cart.isNotEmpty)
-            {
-              _createSession(cart, quantities),
-            }
+          if (cart.isNotEmpty) {Navigator.pushNamed(context, '/customer-info')}
         },
-        label: Text("Purchase"),
+        label: Text("Next"),
       ),
-      body: Column(
-        children: [
-          ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: 500),
-            child: Container(
-              padding: EdgeInsets.all(20),
-              child: ListView(
-                key: Key(cart.length.toString()),
-                children: <Widget>[
-                  for (var i = 0; i < uniqueBikes.length; i++)
-                    MaterialBanner(
-                      elevation: 5,
-                      content: Row(children: [
-                        Text(uniqueBikes[i].name),
-                        Text(" (${uniqueBikes[i].amount} DKK)"),
-                      ]),
-                      leading: SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: Image.network(uniqueBikes[i].url),
-                      ),
-                      actions: [
-                        Text(
-                          "Quantity: ${uniqueBikes[i].quantity}",
-                        ),
-                        TextButton(
-                          child: const Text('Remove'),
-                          onPressed: () {
-                            setState(() {
-                              var index = cart.indexWhere((element) =>
-                                  element.name == uniqueBikes[i].name);
-                              cart.removeAt(index);
-                              CheckoutProvider().setCart(cart);
-                            });
-                          },
-                        ),
-                      ],
-                    )
-                ],
-              ),
-            ),
-          ),
-          Container(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: FutureBuilder(
+        future: CheckoutProvider().getUniqueBikes(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var data = snapshot.data as dynamic;
+            var uniqueBikes = data['uniqueBikes'];
+            var total = data['total'];
+
+            return Column(
               children: [
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: 500),
+                  child: Container(
+                    padding: EdgeInsets.all(20),
+                    child: ListView(
+                      key: Key(cart.length.toString()),
+                      children: <Widget>[
+                        for (var i = 0; i < uniqueBikes.length; i++)
+                          MaterialBanner(
+                            elevation: 5,
+                            content: Row(children: [
+                              Text(uniqueBikes[i].name),
+                              Text(" (${uniqueBikes[i].amount} DKK)"),
+                            ]),
+                            leading: SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: Image.network(uniqueBikes[i].url),
+                            ),
+                            actions: [
+                              Text(
+                                "Quantity: ${uniqueBikes[i].quantity}",
+                              ),
+                              TextButton(
+                                child: const Text('Remove'),
+                                onPressed: () {
+                                  setState(() {
+                                    var index = cart.indexWhere((element) => element.name == uniqueBikes[i].name);
+                                    cart.removeAt(index);
+                                    CheckoutProvider().setCart(cart);
+                                    setState(() {});
+                                  });
+                                },
+                              ),
+                            ],
+                          )
+                      ],
+                    ),
+                  ),
+                ),
                 Container(
-                  padding: EdgeInsets.all(40),
-                  child: Text("Total: $total DKK"),
-                )
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(40),
+                        child: Text("Total: $total DKK"),
+                      ),
+                    ],
+                  ),
+                ),
               ],
-            ),
-          ),
-        ],
+            );
+          }
+          return Text("Error");
+        },
       ),
     );
   }
@@ -288,10 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   child: new Text(
                     bike.name,
-                    style: new TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87),
+                    style: new TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600, color: Colors.black87),
                   ),
                 ),
                 new Padding(
@@ -325,16 +308,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ],
-    );
-  }
-
-  void _createSession(cart, quantities) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => CheckoutScreen(
-          quantities: quantities,
-        ),
-      ),
     );
   }
 }

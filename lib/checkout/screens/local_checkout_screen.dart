@@ -50,13 +50,11 @@ class _LocalCheckoutState extends State<LocalCheckout> {
                     ),
                     android: AndroidInAppWebViewOptions(
                       builtInZoomControls: true,
-                      mixedContentMode:
-                          AndroidMixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
+                      mixedContentMode: AndroidMixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
                     ),
                   ),
                   onWebViewCreated: (InAppWebViewController controller) {},
-                  onConsoleMessage: (InAppWebViewController controller,
-                      ConsoleMessage message) {
+                  onConsoleMessage: (InAppWebViewController controller, ConsoleMessage message) {
                     print("new msg:");
 
                     print(message.message.toString());

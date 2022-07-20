@@ -43,10 +43,8 @@ class CheckoutModel {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-  
-    return other is CheckoutModel &&
-      other.s == s &&
-      other.n == n;
+
+    return other is CheckoutModel && other.s == s && other.n == n;
   }
 
   @override
