@@ -98,14 +98,13 @@ class CheckoutService implements CheckoutRepository {
 
     request.add(utf8.encode(json.encode(data)));
     HttpClientResponse response = await request.close();
-    String reply = await response.transform(utf8.decoder).join();
+    // String reply = await response.transform(utf8.decoder).join();
     client.close();
 
-    Map map = jsonDecode(reply);
-
+    // Map map = jsonDecode(reply);
     // print(map);
 
-    final status = map.isNotEmpty ? true : false;
+    final status = response.statusCode == 200 ? true : false;
 
     completer.complete(status);
     return completer.future;

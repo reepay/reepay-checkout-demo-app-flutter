@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:namefully/namefully.dart';
 import 'package:reepay_demo_app/checkout/index.dart';
 
 import '../domain/models/customer_model.dart';
@@ -22,14 +21,9 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
 
-  late String handle;
-
   @override
   void initState() {
     super.initState();
-    CheckoutProvider().getCustomerHandle().then((value) {
-      handle = CheckoutProvider().customerHandle;
-    });
   }
 
   @override
@@ -42,43 +36,43 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
     super.dispose();
   }
 
-  Widget _errorPopup(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Server Error'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          const Text("Unexpected error. Please check your internet connection."),
-        ],
-      ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            setState(() {
-              CheckoutProvider().setCart([]);
-            });
-            Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
-          },
-          child: const Text('Close'),
-        ),
-      ],
-    );
-  }
+  // Widget _errorPopup(BuildContext context) {
+  //   return AlertDialog(
+  //     title: const Text('Server Error'),
+  //     content: Column(
+  //       mainAxisSize: MainAxisSize.min,
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: <Widget>[
+  //         const Text("Unexpected error. Please check your internet connection."),
+  //       ],
+  //     ),
+  //     actions: <Widget>[
+  //       TextButton(
+  //         onPressed: () {
+  //           setState(() {
+  //             CheckoutProvider().setCart([]);
+  //           });
+  //           Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+  //         },
+  //         child: const Text('Close'),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   void _checkout(context) {
-    if (handle.isEmpty) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => _errorPopup(context),
-      );
-      return;
-    }
+    // if (CheckoutProvider().customerHandle.isEmpty) {
+    //   showDialog(
+    //     context: context,
+    //     builder: (BuildContext context) => _errorPopup(context),
+    //   );
+    //   return;
+    // }
 
     var customer = Customer();
-    var name = Namefully(fullnameController.text);
-    customer.firstName = name.first;
-    customer.lastName = name.last;
+    var names = fullnameController.text.trim().split(' ');
+    customer.firstName = names[0];
+    customer.lastName = names.isNotEmpty ? names[names.length - 1] : '';
     customer.address = address1Controller.text;
     customer.address2 = address2Controller.text;
     customer.phone = phoneController.text;
@@ -87,11 +81,13 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
     // print('handle: $handle');
     // print(customer.toJson());
 
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => CheckoutScreen(),
-      ),
-    );
+    CheckoutProvider().getCustomerHandle().then((value) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => CheckoutScreen(),
+        ),
+      );
+    });
   }
 
   @override
@@ -105,18 +101,8 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
   }
 
   Widget customerForm(context) {
-    return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => {
-          if (_formKey.currentState!.validate())
-            {
-              _checkout(context),
-            }
-        },
-        label: const Text("Next"),
-      ),
-      body: Form(
+    return SingleChildScrollView(
+      child: Form(
         key: _formKey,
         child: Padding(
           padding: const EdgeInsets.all(15.0),
@@ -211,6 +197,7 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
                     ),
                   ),
                   TextFormField(
+                    keyboardType: TextInputType.number,
                     controller: phoneController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -237,6 +224,7 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
                     ),
                   ),
                   TextFormField(
+                    keyboardType: TextInputType.emailAddress,
                     controller: emailController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -247,11 +235,42 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter e-mail';
+                      } else {
+                        bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value);
+                        if (!emailValid) {
+                          return 'Please enter valid e-mail';
+                        }
                       }
                       return null;
                     },
                   ),
                 ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Center(
+                child: Container(
+                  width: 400,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.amber,
+                      primary: Colors.black,
+                      minimumSize: const Size.fromHeight(50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _checkout(context);
+                      }
+                    },
+                    child: const Text(
+                      'Next',
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

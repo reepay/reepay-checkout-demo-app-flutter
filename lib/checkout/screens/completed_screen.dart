@@ -19,15 +19,36 @@ class _CompletedScreenState extends State<CompletedScreen> {
       appBar: AppBar(
         title: const Text("Completed"),
       ),
-      body: Container(
-        child: Center(
-          child: TextButton(
-            child: const Text("Return to home"),
-            onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
-            },
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            child: const Text("Purchase completed"),
           ),
-        ),
+          Container(
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: Center(
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.amber,
+                  primary: Colors.black,
+                  minimumSize: const Size.fromHeight(50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50.0),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+                },
+                child: const Text(
+                  'Back to shopping',
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

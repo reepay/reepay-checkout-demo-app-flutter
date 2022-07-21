@@ -42,6 +42,7 @@ class CheckoutProvider {
 
   Future<void> getCustomerHandle() async {
     customerHandle = await CheckoutService().getCustomerHandle();
+    print('created customer handle: $customerHandle');
   }
 
   Future<void> setCustomer(Customer customer) async {

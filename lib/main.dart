@@ -156,11 +156,15 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget cartPage() {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => {
-          if (cart.isNotEmpty) {Navigator.pushNamed(context, '/customer-info')}
-        },
-        label: Text("Next"),
+      floatingActionButton: Container(
+        width: 400,
+        padding: EdgeInsets.only(left: 15, right: 15),
+        child: FloatingActionButton.extended(
+          onPressed: () => {
+            if (cart.isNotEmpty) {Navigator.pushNamed(context, '/customer-info')}
+          },
+          label: Text("Next"),
+        ),
       ),
       body: FutureBuilder(
         future: CheckoutProvider().getUniqueBikes(),
