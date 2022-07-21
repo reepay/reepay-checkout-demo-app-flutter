@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:reepay_demo_app/auth/providers/index.dart';
 import 'package:reepay_demo_app/checkout/index.dart';
 
 import '../domain/models/customer_model.dart';
@@ -24,6 +25,20 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
   @override
   void initState() {
     super.initState();
+
+    if (AuthProvider().isSignInCustomer) {
+      AuthProvider().getStorageCustomer().then((data) {
+        if (data.isEmpty) {
+          return;
+        }
+        Customer customer = data['customer'];
+        fullnameController.text = '${customer.first_name} ${customer.last_name}';
+        address1Controller.text = customer.address;
+        address2Controller.text = customer.address2;
+        phoneController.text = customer.phone;
+        emailController.text = customer.email;
+      });
+    }
   }
 
   @override
@@ -71,8 +86,8 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
 
     var customer = Customer();
     var names = fullnameController.text.trim().split(' ');
-    customer.firstName = names[0];
-    customer.lastName = names.isNotEmpty ? names[names.length - 1] : '';
+    customer.first_name = names[0];
+    customer.last_name = names.isNotEmpty ? names[names.length - 1] : '';
     customer.address = address1Controller.text;
     customer.address2 = address2Controller.text;
     customer.phone = phoneController.text;
@@ -81,20 +96,35 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
     // print('handle: $handle');
     // print(customer.toJson());
 
-    CheckoutProvider().getCustomerHandle().then((value) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => CheckoutScreen(),
-        ),
-      );
+    if (AuthProvider().isSignInCustomer) {
+      AuthProvider().getStorageCustomer().then((data) {
+        if (data.isNotEmpty) {
+          CheckoutProvider().setCustomerHandle(data['handle']).then((value) {
+            _navigateCheckout();
+          });
+        }
+      });
+      return;
+    }
+
+    CheckoutProvider().setCustomerHandle('').then((value) {
+      _navigateCheckout();
     });
+  }
+
+  void _navigateCheckout() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => CheckoutScreen(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New customer'),
+        title: const Text('Customer'),
       ),
       body: customerForm(context),
     );
@@ -125,7 +155,6 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
                       filled: true,
                       hintText: 'Full name',
                     ),
-                    // The validator receives the text that the user has entered.
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter full name';
@@ -151,7 +180,6 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
                       filled: true,
                       hintText: 'Address line 1',
                     ),
-                    // The validator receives the text that the user has entered.
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter address';
@@ -177,11 +205,10 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
                       filled: true,
                       hintText: 'Floor, door etc.',
                     ),
-                    // The validator receives the text that the user has entered.
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter address';
-                      }
+                      // if (value == null || value.isEmpty) {
+                      //   return 'Please enter address';
+                      // }
                       return null;
                     },
                   ),
@@ -204,7 +231,6 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
                       filled: true,
                       hintText: 'Phone number',
                     ),
-                    // The validator receives the text that the user has entered.
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter phone number';
@@ -231,7 +257,6 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
                       filled: true,
                       hintText: 'E-mail',
                     ),
-                    // The validator receives the text that the user has entered.
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter e-mail';

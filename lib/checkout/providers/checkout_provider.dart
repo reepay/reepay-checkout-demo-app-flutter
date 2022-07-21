@@ -40,8 +40,12 @@ class CheckoutProvider {
     return {'uniqueBikes': uniqueBikes, 'total': total};
   }
 
-  Future<void> getCustomerHandle() async {
-    customerHandle = await CheckoutService().getCustomerHandle();
+  Future<void> setCustomerHandle(String handle) async {
+    if (handle.isEmpty) {
+      customerHandle = await CheckoutService().getCustomerHandle();
+      return;
+    }
+    customerHandle = handle;
     print('created customer handle: $customerHandle');
   }
 
@@ -63,11 +67,12 @@ class CheckoutProvider {
               }
           }),
     );
-    print('provider: quantities $quantities');
+    // print('provider: quantities $quantities');
     return quantities;
   }
 
   Future<void> getCart() async {
+    cart = [];
     final data = await db.collection('cartCollection').doc('cart').get();
     if (data != null) {
       data.forEach((key, value) {
@@ -81,8 +86,12 @@ class CheckoutProvider {
   }
 
   Future<void> setCart(List<Bike> cart) async {
+    List<Map<String, dynamic>> list = [];
+    for (Bike bike in cart) {
+      list.add(bike.toJson());
+    }
     await db.collection('cartCollection').doc('cart').set({
-      'cart': cart,
+      'cart': list,
     });
     this.cart = cart;
   }

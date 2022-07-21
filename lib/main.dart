@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:localstore/localstore.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:reepay_demo_app/auth/providers/index.dart';
+import 'package:reepay_demo_app/auth/screens/sign_in_screen.dart';
 import 'package:reepay_demo_app/checkout/index.dart';
 
 import 'checkout/domain/models/bike_model.dart';
@@ -36,6 +38,7 @@ class MyApp extends StatelessWidget {
         '/local-checkout': (context) => LocalCheckout(),
         '/completed': (context) => CompletedScreen(),
         '/customer-info': (context) => CustomerInfoScreen(),
+        '/sign-in': (context) => SignInScreen(),
       },
     );
   }
@@ -64,6 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
     provider.getCart().then((value) => setState(() {}));
     cart = provider.cart;
     quantities = provider.getQuantities(cart);
+    AuthProvider().setSignIn();
   }
 
   @override
@@ -73,6 +77,24 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                if (AuthProvider().isSignInCustomer) {
+                  AuthProvider().deleteStorageCustomer().then((value) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Signed out')));
+                    setState(() {});
+                  });
+                } else {
+                  Navigator.pushNamed(context, '/sign-in');
+                }
+              },
+              child: Text(
+                AuthProvider().isSignInCustomer ? 'Sign Out' : 'Sign In',
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          ],
         ),
         bottomNavigationBar: menu(),
         body: TabBarView(
@@ -104,9 +126,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () {
                       final db = Localstore.instance;
                       db.collection('cartCollection').doc("cart").delete();
+                      db.collection('customerCollection').doc("customer").delete();
                       print("deleted storage");
                     },
-                    child: Text("Delete storage"),
+                    child: Text("Delete local storage"),
                   ),
                 ],
               ),
@@ -286,7 +309,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     0.0,
                   ),
                   child: new Text(
-                    "Price - ${bike.amount}",
+                    "Price - ${bike.amount} DKK",
                     style: new TextStyle(
                       fontSize: 12.0,
                       fontWeight: FontWeight.w400,

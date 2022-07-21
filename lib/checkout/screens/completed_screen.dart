@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:reepay_demo_app/checkout/providers/checkout_provider.dart';
+
+import '../domain/models/customer_model.dart';
 
 class CompletedScreen extends StatefulWidget {
   const CompletedScreen({Key? key}) : super(key: key);

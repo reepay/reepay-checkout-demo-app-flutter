@@ -1,6 +1,6 @@
 class Customer {
-  String firstName = "";
-  String lastName = "";
+  String first_name = "";
+  String last_name = "";
   String address = "";
   String address2 = "";
   String phone = "";
@@ -9,8 +9,8 @@ class Customer {
   Customer();
 
   Customer.fromJson(Map<String, dynamic> json)
-      : firstName = json["first_name"],
-        lastName = json["last_name"],
+      : first_name = json["first_name"],
+        last_name = json["last_name"],
         address = json["address"],
         address2 = json["address2"],
         phone = json["phone"],
@@ -18,8 +18,8 @@ class Customer {
 
   Map<String, dynamic> toJson() {
     return {
-      "first_name": firstName,
-      "last_name": lastName,
+      "first_name": first_name,
+      "last_name": last_name,
       "address": address,
       "address2": address2,
       "phone": phone,
