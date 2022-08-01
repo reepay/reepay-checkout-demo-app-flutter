@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:reepay_demo_app/checkout/providers/checkout_provider.dart';
-
-import '../domain/models/customer_model.dart';
 
 class CompletedScreen extends StatefulWidget {
   const CompletedScreen({Key? key}) : super(key: key);
@@ -21,6 +18,7 @@ class _CompletedScreenState extends State<CompletedScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Completed"),
+        automaticallyImplyLeading: false,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -28,15 +26,19 @@ class _CompletedScreenState extends State<CompletedScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(20),
-            child: const Text("Purchase completed"),
+            child: const Text(
+              "Purchase completed",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 40),
+            ),
           ),
           Container(
             padding: const EdgeInsets.only(left: 15, right: 15),
             child: Center(
               child: TextButton(
                 style: TextButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  primary: Colors.black,
+                  backgroundColor: const Color(0xFF1cb080),
+                  primary: Colors.white,
                   minimumSize: const Size.fromHeight(50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50.0),

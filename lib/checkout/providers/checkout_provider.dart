@@ -21,12 +21,6 @@ class CheckoutProvider {
 
   CheckoutProvider._internal();
 
-  Future<void> fetchData({required String n}) async {
-    final _data = List.generate(3, ((index) => index + 1));
-    data = _data;
-    // TODO: Notify Listeners
-  }
-
   Future<dynamic> getUniqueBikes() async {
     List<Bike> uniqueBikes = cart.distinct((d) => d.id).toList();
     int total = 0;
@@ -94,5 +88,26 @@ class CheckoutProvider {
       'cart': list,
     });
     this.cart = cart;
+  }
+
+  /// Example of orders
+  List<Map<String, Object>> orderlines() {
+    if (CheckoutProvider().quantities.isEmpty) {
+      return [
+        {"amount": 10000, "ordertext": "Flutter Product", "quantity": 2},
+      ];
+    }
+
+    List<Map<String, Object>> orderLines = [];
+    List<Bike> uniqueBikes = cart.distinct((d) => d.id).toList();
+    for (var element in uniqueBikes) {
+      Map<String, Object> order = {
+        "ordertext": element.name,
+        "amount": element.amount * 100,
+        "quantity": CheckoutProvider().quantities[element.name],
+      };
+      orderLines.add(order);
+    }
+    return orderLines;
   }
 }

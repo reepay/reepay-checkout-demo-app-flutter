@@ -97,8 +97,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     width: 400,
                     child: TextButton(
                       style: TextButton.styleFrom(
-                        backgroundColor: Colors.amber,
-                        primary: Colors.black,
+                        backgroundColor: const Color(0xFF1cb080),
+                        primary: Colors.white,
                         minimumSize: const Size.fromHeight(50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50.0),
@@ -140,7 +140,6 @@ class _SignInScreenState extends State<SignInScreen> {
           content: Text('Signed in as ${customer.email}'),
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        // setState(() {});
         Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
       });
       return;

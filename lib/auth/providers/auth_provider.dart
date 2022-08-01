@@ -40,7 +40,7 @@ class AuthProvider {
   Future<void> setStorageCustomer(Customer customer) async {
     await db.collection('customerCollection').doc('customer').set({
       'customer': customer.toJson(),
-      'handle': 'customer-123', // existing customer handle
+      'handle': 'customer-flutter-1', // existing customer handle
     });
     isSignInCustomer = true;
   }

@@ -115,7 +115,7 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
   void _navigateCheckout() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => CheckoutScreen(),
+        builder: (context) => const CheckoutScreen(),
       ),
     );
   }
@@ -279,8 +279,8 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
                   width: 400,
                   child: TextButton(
                     style: TextButton.styleFrom(
-                      backgroundColor: Colors.amber,
-                      primary: Colors.black,
+                      backgroundColor: const Color(0xFF1cb080),
+                      primary: Colors.white,
                       minimumSize: const Size.fromHeight(50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50.0),
