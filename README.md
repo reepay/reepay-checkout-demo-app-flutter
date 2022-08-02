@@ -68,6 +68,8 @@ flutter run -d <device_id>
 1. Run your Flutter app.
 2. Add products to your cart and create a Reepay Checkout.
 
+https://user-images.githubusercontent.com/108516218/182375094-a762b250-8dbf-41f5-9e5e-73fe2d8a2c85.mov
+
 ### Reepay Private API Key
 
 When you have generated a [Private API Key](https://app.reepay.com/#/rp/dev/api) from Reepay. Add the value to `REEPAY_PRIVATE_API_KEY` located in `.env` file.
