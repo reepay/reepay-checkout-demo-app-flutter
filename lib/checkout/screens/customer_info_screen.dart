@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:reepay_demo_app/auth/providers/index.dart';
-import 'package:reepay_demo_app/checkout/index.dart';
+import 'package:reepay_checkout_flutter_example/auth/providers/index.dart';
+import 'package:reepay_checkout_flutter_example/checkout/index.dart';
 
 import '../domain/models/customer_model.dart';
 

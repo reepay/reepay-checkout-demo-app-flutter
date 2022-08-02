@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:reepay_demo_app/auth/providers/index.dart';
+import 'package:reepay_checkout_flutter_example/auth/providers/index.dart';
 
 import '../../checkout/domain/models/customer_model.dart';
 

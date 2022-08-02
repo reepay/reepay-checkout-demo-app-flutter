@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:localstore/localstore.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:reepay_demo_app/auth/providers/index.dart';
-import 'package:reepay_demo_app/auth/screens/sign_in_screen.dart';
-import 'package:reepay_demo_app/checkout/index.dart';
+import 'package:reepay_checkout_flutter_example/auth/providers/index.dart';
+import 'package:reepay_checkout_flutter_example/auth/screens/sign_in_screen.dart';
+import 'package:reepay_checkout_flutter_example/checkout/index.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'checkout/domain/models/bike_model.dart';

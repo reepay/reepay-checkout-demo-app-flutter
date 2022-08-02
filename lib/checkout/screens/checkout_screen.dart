@@ -2,7 +2,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:reepay_demo_app/checkout/index.dart';
+import 'package:reepay_checkout_flutter_example/checkout/index.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class CheckoutScreen extends StatefulWidget {

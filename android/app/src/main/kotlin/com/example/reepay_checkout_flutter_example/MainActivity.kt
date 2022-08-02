@@ -1,4 +1,4 @@
-package com.reepay.reepay_demo_app
+package com.example.reepay_checkout_flutter_example
 
 import io.flutter.embedding.android.FlutterActivity
 

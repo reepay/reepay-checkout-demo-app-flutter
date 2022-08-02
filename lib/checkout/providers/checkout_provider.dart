@@ -1,6 +1,6 @@
 import 'package:darq/darq.dart';
 import 'package:localstore/localstore.dart';
-import 'package:reepay_demo_app/checkout/domain/services/checkout_service.dart';
+import 'package:reepay_checkout_flutter_example/checkout/domain/services/checkout_service.dart';
 
 import '../domain/models/bike_model.dart';
 import '../domain/models/customer_model.dart';
