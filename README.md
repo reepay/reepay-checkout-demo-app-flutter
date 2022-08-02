@@ -68,7 +68,7 @@ flutter run -d <device_id>
 1. Run your Flutter app with `flutter run`.
 2. Add products to your cart.
 3. Fill customer information or sign in with the built-in example account.
-4. Create Reepay Checkout and complete purchase with a [Test card](https://reference.reepay.com/api/#testing)
+4. Create Reepay Checkout and complete purchase with a [test card.](https://reference.reepay.com/api/#testing)
 
 https://user-images.githubusercontent.com/108516218/182375094-a762b250-8dbf-41f5-9e5e-73fe2d8a2c85.mov
 
