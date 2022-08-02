@@ -49,7 +49,7 @@ flutter create --platforms=android . --project-name reepay_checkout_flutter_exam
 
 ## flutter run
 
-Runs your app in the available devices given that the required platforms are added.
+Runs your app on the selected available device (requires a platform for the device).
 
 ```
 flutter run
@@ -65,8 +65,10 @@ flutter run -d <device_id>
 
 ## Usage
 
-1. Run your Flutter app.
-2. Add products to your cart and create a Reepay Checkout.
+1. Run your Flutter app with `flutter run`.
+2. Add products to your cart.
+3. Fill customer information or sign in with the built-in example account.
+4. Create Reepay Checkout and complete purchase with a [Test card](https://reference.reepay.com/api/#testing)
 
 https://user-images.githubusercontent.com/108516218/182375094-a762b250-8dbf-41f5-9e5e-73fe2d8a2c85.mov
 
