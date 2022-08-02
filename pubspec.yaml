@@ -1,5 +1,5 @@
 name: reepay_demo_app
-description: A new Flutter project.
+description: A demo app for Reepay Checkout in Flutter Framework.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -40,6 +40,7 @@ dependencies:
   localstore: ^1.2.3
   darq: ^1.2.1
   flutter_dotenv: ^5.0.2
+  url_launcher: ^6.1.5
 
 dev_dependencies:
   flutter_test:

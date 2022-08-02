@@ -80,12 +80,13 @@ class _SignInScreenState extends State<SignInScreen> {
                         filled: true,
                         hintText: '••••••',
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter password';
-                        }
-                        return null;
-                      },
+                      // todo: add password validation
+                      // validator: (value) {
+                      //   if (value == null || value.isEmpty) {
+                      //     return 'Please enter password';
+                      //   }
+                      //   return null;
+                      // },
                     ),
                   ],
                 ),

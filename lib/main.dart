@@ -1,7 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_new
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:localstore/localstore.dart';
@@ -9,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:reepay_demo_app/auth/providers/index.dart';
 import 'package:reepay_demo_app/auth/screens/sign_in_screen.dart';
 import 'package:reepay_demo_app/checkout/index.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'checkout/domain/models/bike_model.dart';
 
@@ -33,6 +32,12 @@ Map<int, Color> color = {
   900: Color.fromRGBO(28, 176, 128, 1),
 };
 
+Future<void> _launchUrl(url) async {
+  if (!await launchUrl(url)) {
+    throw 'Could not launch $url';
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -47,7 +52,6 @@ class MyApp extends StatelessWidget {
       home: const MyHomePage(title: 'Reepay Bike Shop'),
       routes: {
         '/checkout': (context) => CheckoutScreen(),
-        '/android-checkout': (context) => AndroidCheckoutScreen(),
         '/completed': (context) => CompletedScreen(),
         '/customer-info': (context) => CustomerInfoScreen(),
         '/sign-in': (context) => SignInScreen(),
@@ -65,11 +69,12 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   late Future<List<Bike>> bikes;
   late List<Bike> cart;
   late CheckoutProvider provider;
   late dynamic quantities;
+  late TabController tabController;
 
   @override
   void initState() {
@@ -80,6 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
     cart = provider.cart;
     quantities = provider.getQuantities(cart);
     AuthProvider().setSignIn();
+    tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -89,6 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
+          automaticallyImplyLeading: false,
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -110,8 +117,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         bottomNavigationBar: menu(),
         body: TabBarView(
+          controller: tabController,
           children: [
-            products(),
+            productsPage(),
             helpPage(),
             cartPage(),
           ],
@@ -130,6 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Container(
           color: Color(0xFF1c4c84),
           child: TabBar(
+            controller: tabController,
             labelColor: Colors.white,
             unselectedLabelColor: Colors.white70,
             indicatorSize: TabBarIndicatorSize.tab,
@@ -161,6 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
         padding: const EdgeInsets.all(40.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(bottom: 40),
@@ -174,31 +184,42 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             TextButton(
               onPressed: () {
-                if (Platform.isIOS) {
-                  Navigator.pushNamed(context, '/ios-checkout');
-                } else {
-                  throw Exception("ERROR: Not an iOS device!");
-                }
+                final Uri url = Uri.parse('https://github.com/reepay/reepay-checkout-demo-app-flutter#readme');
+                _launchUrl(url);
               },
-              child: Text("Native WebView - iOS"),
+              child: Text("README"),
             ),
             TextButton(
               onPressed: () {
-                if (Platform.isAndroid) {
-                  Navigator.pushNamed(context, '/android-checkout');
-                } else {
-                  throw Exception("ERROR: Not an Android device!");
-                }
+                final Uri url = Uri.parse('https://reference.reepay.com/api/');
+                _launchUrl(url);
               },
-              child: Text("Native WebView - Android"),
+              child: Text("API Reference"),
             ),
+            TextButton(
+              onPressed: () {
+                final Uri url = Uri.parse('https://docs.reepay.com/reference/reference-introduction');
+                _launchUrl(url);
+              },
+              child: Text("Checkout Docs"),
+            ),
+            Spacer(),
             TextButton(
               onPressed: () {
                 final db = Localstore.instance;
                 db.collection('cartCollection').doc("cart").delete();
                 db.collection('customerCollection').doc("customer").delete();
+
+                // Reset app
+                Navigator.of(context).push(
+                  new MaterialPageRoute(
+                    builder: (context) => MyHomePage(
+                      title: 'Reepay Bike Shop',
+                    ),
+                  ),
+                );
               },
-              child: Text("Delete App Localstore"),
+              child: Text("Reset application"),
             ),
           ],
         ),
@@ -266,6 +287,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       var index = cart.indexWhere((element) => element.name == uniqueBikes[i].name);
                                       cart.removeAt(index);
                                       CheckoutProvider().setCart(cart);
+                                      bikes = CheckoutService().getBikeProducts(); // update products page
                                     });
                                   },
                                 ),
@@ -296,23 +318,46 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget products() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      child: FutureBuilder(
-        future: bikes,
-        builder: ((context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            var bikes = snapshot.data as List<Bike>;
-            return ListView.builder(
-              itemCount: bikes.length,
-              itemBuilder: ((context, index) {
-                return product(bikes[index]);
-              }),
-            );
-          }
-          return Text("");
-        }),
+  Widget productsPage() {
+    return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: CheckoutProvider().cart.isEmpty
+          ? null
+          : Container(
+              width: 400,
+              padding: EdgeInsets.only(left: 15, right: 15),
+              child: FloatingActionButton.extended(
+                backgroundColor: Color(0xFF1cb080),
+                onPressed: () => {tabController.index = 2},
+                label: Text("Go to Cart"),
+              ),
+            ),
+      body: Container(
+        padding: EdgeInsets.all(20),
+        child: FutureBuilder(
+          future: bikes,
+          builder: ((context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              List<Bike> bikes = snapshot.data as List<Bike>;
+
+              // update products' quantities from saved cart
+              for (var bikeElement in bikes) {
+                var index = cart.indexWhere((cartElement) => cartElement.name == bikeElement.name);
+                if (index < 0) continue;
+                var found = cart.elementAt(index);
+                bikeElement.quantity = found.quantity;
+              }
+
+              return ListView.builder(
+                itemCount: bikes.length,
+                itemBuilder: ((context, index) {
+                  return product(bikes[index]);
+                }),
+              );
+            }
+            return Text("");
+          }),
+        ),
       ),
     );
   }
@@ -325,7 +370,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           Stack(children: [
             CircleAvatar(
-              radius: 40,
+              radius: 30,
               backgroundImage: NetworkImage(bike.url),
             ),
             new Positioned.fill(
@@ -354,13 +399,28 @@ class _MyHomePageState extends State<MyHomePage> {
               fontSize: 14,
             ),
           )),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Text('${bike.amount.toString()} DKK'),
-          ),
+          Text('${bike.amount.toString()} DKK'),
           IconButton(
             onPressed: () => {
               setState(() {
+                if (bike.quantity > 0) bike.quantity--;
+                var index = cart.indexWhere((element) => element.name == bike.name);
+                if (index < 0) return;
+                var found = cart.elementAt(index);
+                cart.remove(found);
+                CheckoutProvider().setCart(cart);
+              })
+            },
+            icon: Icon(
+              Icons.remove_circle,
+              color: Color(0xFF1cb080),
+            ),
+          ),
+          Text("${bike.quantity}"),
+          IconButton(
+            onPressed: () => {
+              setState(() {
+                bike.quantity++;
                 cart.add(bike);
                 CheckoutProvider().setCart(cart);
               })
