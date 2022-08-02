@@ -41,7 +41,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
                     TextFormField(
-                      controller: emailController..text = 'carl@mail.com',
+                      controller: emailController..text = 'flutter@reepay.com',
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         filled: true,
@@ -129,13 +129,13 @@ class _SignInScreenState extends State<SignInScreen> {
     var email = emailController.text;
     var password = passwordController.text;
 
-    if (email == 'carl@mail.com') {
+    if (email == 'flutter@reepay.com') {
       Customer customer = Customer();
-      customer.first_name = "Carl";
-      customer.last_name = "Johnson";
-      customer.address = "Beachstreet 123";
-      customer.email = "carl@mail.com";
-      customer.phone = "11223344";
+      customer.first_name = "Flutter";
+      customer.last_name = "Reepay";
+      customer.address = "Pilestræde 28a, 1112 København K";
+      customer.email = "flutter@reepay.com";
+      customer.phone = "12345678";
       AuthProvider().setStorageCustomer(customer).then((value) {
         var snackBar = SnackBar(
           content: Text('Signed in as ${customer.email}'),

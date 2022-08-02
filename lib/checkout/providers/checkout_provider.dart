@@ -75,7 +75,7 @@ class CheckoutProvider {
           cart.add(Bike.fromJson(element));
         }
       });
-      print("provider: cart: ${cart.length}");
+      // print("provider: cart: ${cart.length}");
     }
   }
 

@@ -51,39 +51,7 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
     super.dispose();
   }
 
-  // Widget _errorPopup(BuildContext context) {
-  //   return AlertDialog(
-  //     title: const Text('Server Error'),
-  //     content: Column(
-  //       mainAxisSize: MainAxisSize.min,
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: <Widget>[
-  //         const Text("Unexpected error. Please check your internet connection."),
-  //       ],
-  //     ),
-  //     actions: <Widget>[
-  //       TextButton(
-  //         onPressed: () {
-  //           setState(() {
-  //             CheckoutProvider().setCart([]);
-  //           });
-  //           Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
-  //         },
-  //         child: const Text('Close'),
-  //       ),
-  //     ],
-  //   );
-  // }
-
   void _checkout(context) {
-    // if (CheckoutProvider().customerHandle.isEmpty) {
-    //   showDialog(
-    //     context: context,
-    //     builder: (BuildContext context) => _errorPopup(context),
-    //   );
-    //   return;
-    // }
-
     var customer = Customer();
     var names = fullnameController.text.trim().split(' ');
     customer.first_name = names[0];

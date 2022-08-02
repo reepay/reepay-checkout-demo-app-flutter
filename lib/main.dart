@@ -15,7 +15,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   final appDocumentDirectory = await getApplicationDocumentsDirectory();
-  print("Storage data: $appDocumentDirectory");
+  // print("Storage data: $appDocumentDirectory");
   runApp(MyApp());
 }
 
