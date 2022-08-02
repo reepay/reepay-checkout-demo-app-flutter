@@ -55,8 +55,8 @@ class CheckoutService implements CheckoutRepository {
     HttpClient client = HttpClient();
     HttpClientRequest request = await client.postUrl(Uri.parse(apiUrl));
 
-    String apiKey = dotenv.env['REEPAY_API_KEY']!;
-    if (apiKey.isEmpty) (throw Exception("ERROR: Missing REEPAY_API_KEY"));
+    String apiKey = dotenv.env['REEPAY_PRIVATE_API_KEY']!;
+    if (apiKey.isEmpty) (throw Exception("ERROR: Missing REEPAY_PRIVATE_API_KEY"));
     String encoded = base64.encode(utf8.encode(apiKey));
     request.headers.set("content-type", "application/json");
     request.headers.set("accept", "application/json");
@@ -98,8 +98,8 @@ class CheckoutService implements CheckoutRepository {
     HttpClient client = HttpClient();
     HttpClientRequest request = await client.postUrl(Uri.parse(apiUrl));
 
-    String apiKey = dotenv.env['REEPAY_API_KEY']!;
-    if (apiKey.isEmpty) return "ERROR: Missing REEPAY_API_KEY";
+    String apiKey = dotenv.env['REEPAY_PRIVATE_API_KEY']!;
+    if (apiKey.isEmpty) return "ERROR: Missing REEPAY_PRIVATE_API_KEY";
     String encoded = base64.encode(utf8.encode(apiKey));
     request.headers.set("content-type", "application/json");
     request.headers.set("accept", "application/json");

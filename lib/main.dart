@@ -392,11 +392,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           ]),
           SizedBox(width: 20),
           Expanded(
-              child: Text(
-            bike.name,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
+              child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: Text(
+              bike.name,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
             ),
           )),
           Text('${bike.amount.toString()} DKK'),
