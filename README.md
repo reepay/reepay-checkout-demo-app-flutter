@@ -32,7 +32,7 @@ flutter pub get
 
 ## Available Scripts
 
-This project is built with `Flutter version 3.0.4`. Before running your Flutter app, you must create iOS and Android platforms respectively.
+This project is built with `Flutter version 3.13.8`. Before running your Flutter app, you must create iOS and Android platforms respectively.
 
 ### flutter create ios platform
 

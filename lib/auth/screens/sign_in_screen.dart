@@ -98,8 +98,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     width: 400,
                     child: TextButton(
                       style: TextButton.styleFrom(
-                        backgroundColor: const Color(0xFF1cb080),
-                        primary: Colors.white,
+                        foregroundColor: Colors.white, backgroundColor: const Color(0xFF1cb080),
                         minimumSize: const Size.fromHeight(50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50.0),

@@ -481,11 +481,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         ),
       ),
       actions: <Widget>[
-        new FlatButton(
+        new TextButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
-          textColor: Theme.of(context).primaryColor,
+          style: TextButton.styleFrom(
+            textStyle: TextStyle(color: Theme.of(context).primaryColor),
+          ),
           child: const Text('Close'),
         ),
       ],
