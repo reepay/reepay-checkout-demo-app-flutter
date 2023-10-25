@@ -7,7 +7,7 @@ import 'package:reepay_checkout_flutter_example/checkout/index.dart';
 import '../domain/models/customer_model.dart';
 
 class CustomerInfoScreen extends StatefulWidget {
-  const CustomerInfoScreen({Key? key}) : super(key: key);
+  const CustomerInfoScreen({super.key});
 
   @override
   State<CustomerInfoScreen> createState() => _CustomerInfoScreenState();
@@ -247,7 +247,8 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
                   width: 400,
                   child: TextButton(
                     style: TextButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: const Color(0xFF1cb080),
+                      foregroundColor: Colors.white,
+                      backgroundColor: const Color(0xFF1cb080),
                       minimumSize: const Size.fromHeight(50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50.0),

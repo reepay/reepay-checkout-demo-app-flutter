@@ -4,7 +4,7 @@ import 'package:reepay_checkout_flutter_example/auth/providers/index.dart';
 import '../../checkout/domain/models/customer_model.dart';
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({Key? key}) : super(key: key);
+  const SignInScreen({super.key});
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
@@ -98,7 +98,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     width: 400,
                     child: TextButton(
                       style: TextButton.styleFrom(
-                        foregroundColor: Colors.white, backgroundColor: const Color(0xFF1cb080),
+                        foregroundColor: Colors.white,
+                        backgroundColor: const Color(0xFF1cb080),
                         minimumSize: const Size.fromHeight(50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50.0),

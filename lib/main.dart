@@ -15,7 +15,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   final appDocumentDirectory = await getApplicationDocumentsDirectory();
-  // print("Storage data: $appDocumentDirectory");
+  print("Storage data: $appDocumentDirectory");
   runApp(MyApp());
 }
 
@@ -39,7 +39,7 @@ Future<void> _launchUrl(url) async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({super.key, required this.title});
 
   final String title;
 
@@ -259,55 +259,51 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                       key: Key(cart.length.toString()),
                       children: <Widget>[
                         for (var i = 0; i < uniqueBikes.length; i++)
-                          Container(
-                            child: MaterialBanner(
-                              elevation: 5,
-                              content: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                Text(
-                                  uniqueBikes[i].name,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
+                          MaterialBanner(
+                            elevation: 5,
+                            content: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                              Text(
+                                uniqueBikes[i].name,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
                                 ),
-                                Text("Price: ${uniqueBikes[i].amount} DKK"),
-                              ]),
-                              leading: CircleAvatar(
-                                radius: 30,
-                                backgroundImage: NetworkImage(uniqueBikes[i].url),
                               ),
-                              actions: [
-                                Text(
-                                  "Quantity: ${uniqueBikes[i].quantity}",
-                                ),
-                                TextButton(
-                                  child: const Text('Remove'),
-                                  onPressed: () {
-                                    setState(() {
-                                      var index = cart.indexWhere((element) => element.name == uniqueBikes[i].name);
-                                      cart.removeAt(index);
-                                      CheckoutProvider().setCart(cart);
-                                      bikes = CheckoutService().getBikeProducts(); // update products page
-                                    });
-                                  },
-                                ),
-                              ],
+                              Text("Price: ${uniqueBikes[i].amount} DKK"),
+                            ]),
+                            leading: CircleAvatar(
+                              radius: 30,
+                              backgroundImage: NetworkImage(uniqueBikes[i].url),
                             ),
+                            actions: [
+                              Text(
+                                "Quantity: ${uniqueBikes[i].quantity}",
+                              ),
+                              TextButton(
+                                child: const Text('Remove'),
+                                onPressed: () {
+                                  setState(() {
+                                    var index = cart.indexWhere((element) => element.name == uniqueBikes[i].name);
+                                    cart.removeAt(index);
+                                    CheckoutProvider().setCart(cart);
+                                    bikes = CheckoutService().getBikeProducts(); // update products page
+                                  });
+                                },
+                              ),
+                            ],
                           )
                       ],
                     ),
                   ),
                 ),
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(40),
-                        child: Text("Total: $total DKK"),
-                      ),
-                    ],
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(40),
+                      child: Text("Total: $total DKK"),
+                    ),
+                  ],
                 ),
               ],
             );
@@ -441,42 +437,40 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Widget showProduct(BuildContext context, Bike bike) {
     return new AlertDialog(
       content: SingleChildScrollView(
-        child: Container(
-          child: new Padding(
-            padding: new EdgeInsets.all(15.0),
-            child: new Column(
-              children: <Widget>[
-                new SizedBox(
-                  child: new Stack(
-                    children: <Widget>[
-                      Image.network(bike.url),
-                    ],
+        child: new Padding(
+          padding: new EdgeInsets.all(15.0),
+          child: new Column(
+            children: <Widget>[
+              new SizedBox(
+                child: new Stack(
+                  children: <Widget>[
+                    Image.network(bike.url),
+                  ],
+                ),
+              ),
+              new Padding(
+                padding: new EdgeInsets.all(
+                  7.0,
+                ),
+                child: new Text(
+                  bike.name,
+                  style: new TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600, color: Colors.black87),
+                ),
+              ),
+              new Padding(
+                padding: new EdgeInsets.all(
+                  0.0,
+                ),
+                child: new Text(
+                  "Price: ${bike.amount} DKK",
+                  style: new TextStyle(
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black54,
                   ),
                 ),
-                new Padding(
-                  padding: new EdgeInsets.all(
-                    7.0,
-                  ),
-                  child: new Text(
-                    bike.name,
-                    style: new TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600, color: Colors.black87),
-                  ),
-                ),
-                new Padding(
-                  padding: new EdgeInsets.all(
-                    0.0,
-                  ),
-                  child: new Text(
-                    "Price: ${bike.amount} DKK",
-                    style: new TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
