@@ -1,20 +1,22 @@
 // ignore_for_file: prefer_const_constructors
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:reepay_checkout_flutter_example/checkout/index.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({Key? key}) : super(key: key);
+  const CheckoutScreen({super.key});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-  final Completer<WebViewController> _controller = Completer<WebViewController>();
-
   late Future<Map> sessionData;
 
   @override
@@ -29,56 +31,96 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       appBar: AppBar(
         title: const Text('Payment Window'),
       ),
-      body: Container(
-        child: Center(
-          child: FutureBuilder(
-            future: sessionData,
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.done && !snapshot.hasData) {
-                print("ERROR: Missing environment variables!");
-              }
+      body: Center(
+        child: FutureBuilder(
+          future: sessionData,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.done && !snapshot.hasData) {
+              print("ERROR: Missing environment variables!");
+            }
 
-              if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-                Map<String, dynamic> response = snapshot.data as Map<String, dynamic>;
-                // print(response);
-                return WebView(
-                  initialUrl: Uri.dataFromString(getHtmlData(response["id"]), mimeType: 'text/html').toString(),
-                  // initialUrl: response["url"],
-                  javascriptMode: JavascriptMode.unrestricted,
-                  onWebViewCreated: (WebViewController webViewController) async {
-                    _controller.complete(webViewController);
-                  },
-                  navigationDelegate: (NavigationRequest request) {
-                    // listen to url changes
-                    // if (request.url != Uri.dataFromString(getHtmlData(response["id"]), mimeType: 'text/html').toString()) {
-                    //   print('req: ${request.url}');
-                    // }
-                    if (request.url.contains("cancel")) {
-                      onCancel();
-                      return NavigationDecision.prevent;
-                    } else if (request.url.contains("accept")) {
-                      onAccept();
-                      return NavigationDecision.prevent;
-                    }
-                    return NavigationDecision.navigate;
-                  },
-                );
-              }
-              return Text("Loading...");
-            },
-          ),
+            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+              Map<String, dynamic> response = snapshot.data as Map<String, dynamic>;
+              // print(response);
+
+              final String sessionUrl = response["url"];
+              // final String sessionUrl = 'https://staging-checkout.reepay.com/#/checkout/cs_8890be9db09b0ffcefaebbfb1bee05a0'; // todo: google/apple pay
+              // final String sessionUrl = Uri.dataFromString(getHtmlData(response["id"]), mimeType: 'text/html').toString(); // todo: using html template
+
+              final WebViewController webViewController = getWebViewController(sessionUrl);
+              final WebViewWidget webViewWidget = WebViewWidget.fromPlatformCreationParams(
+                params: getWebViewWidgetParams(webViewController),
+              );
+
+              return webViewWidget;
+            }
+            return Text("Loading...");
+          },
         ),
       ),
     );
   }
 
+  WebViewController getWebViewController(String sessionUrl) {
+    final WebViewController controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {
+            // Update loading bar.
+          },
+          onPageStarted: (String url) {},
+          onPageFinished: (String url) {},
+          onWebResourceError: (WebResourceError error) {
+            print('Error Url: ${error.url}');
+            print('Error Description: ${error.description}');
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            // Listen to url changes
+            // if (request.url != Uri.dataFromString(getHtmlData(response["id"]), mimeType: 'text/html').toString()) {
+            //   print('req: ${request.url}');
+            // }
+            if (request.url.contains("cancel")) {
+              onCancel();
+              return NavigationDecision.prevent;
+            } else if (request.url.contains("accept")) {
+              onAccept();
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(sessionUrl));
+    return controller;
+  }
+
+  PlatformWebViewWidgetCreationParams getWebViewWidgetParams(WebViewController controller) {
+    PlatformWebViewWidgetCreationParams params = PlatformWebViewWidgetCreationParams(
+      controller: controller.platform,
+      layoutDirection: TextDirection.ltr,
+      gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
+    );
+
+    if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+      params = WebKitWebViewWidgetCreationParams.fromPlatformWebViewWidgetCreationParams(
+        params,
+      );
+    } else if (WebViewPlatform.instance is AndroidWebViewPlatform) {
+      params = AndroidWebViewWidgetCreationParams.fromPlatformWebViewWidgetCreationParams(
+        params,
+      );
+    }
+
+    return params;
+  }
+
   /// cancel handler
   void onCancel() {
     print("Payment failed");
-    setState(() {
-      CheckoutProvider().setCart([]);
-    });
-    Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+    CheckoutProvider().setCart([]);
+    Navigator.popAndPushNamed(context, '/');
   }
 
   /// accept handler
@@ -89,13 +131,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           customerHandle: CheckoutProvider().customerHandle,
           customer: CheckoutProvider().customer,
         )
-        .then(
-          (value) => print('Status - update customer: $value'),
-        );
-    setState(() {
-      CheckoutProvider().setCart([]);
-    });
-    Navigator.pushNamed(context, '/completed');
+        .then((value) => print('Status - update customer: $value'));
+    CheckoutProvider().setCart([]);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => CompletedScreen()),
+    );
   }
 
   ///

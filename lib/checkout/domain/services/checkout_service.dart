@@ -48,7 +48,7 @@ class CheckoutService implements CheckoutRepository {
 
     String apiUrl = dotenv.env['REEPAY_CHECKOUT_API_SESSION_CHARGE'] ?? '';
     if (apiUrl.isEmpty) {
-      completer.complete(null);
+      completer.complete({});
       return completer.future;
     }
 
@@ -66,7 +66,7 @@ class CheckoutService implements CheckoutRepository {
 
     Map data = {
       "order": {
-        "handle": 'order-flutter-$orderNumber',
+        "handle": 'order_flutter_$orderNumber',
         "customer": {
           "handle": customerHandle,
           // "first_name": 'John',

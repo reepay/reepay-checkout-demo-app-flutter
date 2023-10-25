@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CompletedScreen extends StatefulWidget {
-  const CompletedScreen({Key? key}) : super(key: key);
+  const CompletedScreen({super.key});
 
   @override
   State<CompletedScreen> createState() => _CompletedScreenState();
@@ -37,14 +37,15 @@ class _CompletedScreenState extends State<CompletedScreen> {
             child: Center(
               child: TextButton(
                 style: TextButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: const Color(0xFF1cb080),
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF1cb080),
                   minimumSize: const Size.fromHeight(50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50.0),
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+                  Navigator.popAndPushNamed(context, '/');
                 },
                 child: const Text(
                   'Back to shopping',
