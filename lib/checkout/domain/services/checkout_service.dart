@@ -19,6 +19,7 @@ class CheckoutService implements CheckoutRepository {
     bike.id = 1;
     bike.name = 'Orange Mountain Bike';
     bike.amount = 600;
+    bike.currency = getCurrency();
     bike.url =
         'https://images.unsplash.com/photo-1511994298241-608e28f14fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8YmljeWNsZXxlbnwwfHwwfHw%3D&w=1000&q=80';
     bikes.add(bike);
@@ -27,6 +28,7 @@ class CheckoutService implements CheckoutRepository {
     bike.id = 2;
     bike.name = 'Blue Mountain Bike';
     bike.amount = 250;
+    bike.currency = getCurrency();
     bike.url = 'https://cyclingindustry.news/wp-content/uploads/2019/09/img-bright.jpg';
     bikes.add(bike);
 
@@ -34,6 +36,7 @@ class CheckoutService implements CheckoutRepository {
     bike.id = 3;
     bike.name = 'Black Mountain Bike';
     bike.amount = 350;
+    bike.currency = getCurrency();
     bike.url =
         'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8YmljeWNsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60';
     bikes.add(bike);
@@ -41,6 +44,11 @@ class CheckoutService implements CheckoutRepository {
     completer.complete(bikes);
 
     return completer.future;
+  }
+
+  @override
+  getCurrency() {
+    return 'DKK';
   }
 
   Future<Map<String, dynamic>> getSessionUrl(customerHandle, orderlines) async {
@@ -73,10 +81,13 @@ class CheckoutService implements CheckoutRepository {
           // "last_name": 'Doe',
           // "phone": '+4511112222',
         },
+        "currency": getCurrency(),
         "order_lines": orderlines,
       },
       "accept_url": 'https://sandbox.reepay.com/api/httpstatus/200/accept/order-$orderNumber',
       "cancel_url": 'https://sandbox.reepay.com/api/httpstatus/200/cancel/order-$orderNumber/'
+      // "accept_url": 'reepaycheckout://?accept=true',
+      // "cancel_url": 'reepaycheckout://?cancel=true'
     };
 
     request.add(utf8.encode(json.encode(data)));

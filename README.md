@@ -29,10 +29,11 @@ flutter pub get
   - [Extra](#extra)
 - [Usage](#usage)
   - [Reepay Private API Key](#reepay-private-api-key)
+  - [Custom URL schemes](#custom-url-schemes)
 
 ## Available Scripts
 
-This project is built with `Flutter version 3.13.8`. Before running your Flutter app, you must create iOS and Android platforms respectively.
+This project is built with `Flutter version 3.19.0`. Before running your Flutter app, you must create iOS and Android platforms respectively.
 
 ### flutter create ios platform
 
@@ -95,3 +96,39 @@ https://user-images.githubusercontent.com/108516218/182375094-a762b250-8dbf-41f5
 ### Reepay Private API Key
 
 When you have generated a [Private API Key](https://app.reepay.com/#/rp/dev/api) from Reepay. Add the value to `REEPAY_PRIVATE_API_KEY` located in `.env` file.
+
+### Custom URL schemes
+
+In order to redirect back to the app after e.g. successful payment from external app such as MobilePay/Vipps, you can use custom URL schemes. 
+For example, `reepaycheckout://` which is defined in the `Info.plist` file for iOS and `AndroidManifest.xml` for Android.
+
+An example where the deep link is `reepaycheckout://custom.host` added to `Info.plist`:
+
+```
+<key>CFBundleURLTypes</key>
+<array>
+  <dict>
+    <key>CFBundleTypeRole</key>
+    <string>Editor</string>
+    <key>CFBundleURLName</key>
+    <string>custom.host</string>
+    <key>CFBundleURLSchemes</key>
+    <array>
+      <string>reepaycheckout</string>
+    </array>
+  </dict>
+</array> 
+```
+
+An example where the deep link is `reepaycheckout://your_app` added to `AndroidManifest.xml`:
+
+```
+<intent-filter>
+  <action android:name="android.intent.action.VIEW" />
+  <category android:name="android.intent.category.DEFAULT" />
+  <category android:name="android.intent.category.BROWSABLE" />
+  <data
+    android:scheme="reepaycheckout"
+    android:host="your_app" />
+</intent-filter> 
+```

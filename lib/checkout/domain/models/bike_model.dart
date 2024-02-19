@@ -4,6 +4,7 @@ class Bike {
   int amount = 0;
   String url = "";
   int quantity = 0;
+  String currency = "";
 
   Bike();
 
@@ -12,7 +13,8 @@ class Bike {
         name = json['name'],
         amount = json['amount'],
         url = json['url'],
-        quantity = json['quantity'];
+        quantity = json['quantity'],
+        currency = json['currency'];
 
   Map<String, dynamic> toJson() {
     return {
@@ -21,6 +23,7 @@ class Bike {
       'amount': amount,
       'url': url,
       'quantity': quantity,
+      'currency': currency,
     };
   }
 }

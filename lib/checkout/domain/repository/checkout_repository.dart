@@ -11,4 +11,6 @@ abstract class CheckoutRepository {
   Future<String> getCustomerHandle();
 
   Future<bool> updateCustomer({required String customerHandle, required Customer customer});
+
+  getCurrency();
 }

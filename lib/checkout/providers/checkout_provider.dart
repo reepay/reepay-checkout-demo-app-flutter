@@ -31,7 +31,7 @@ class CheckoutProvider {
     for (var item in uniqueBikes) {
       total = total + (item.quantity * item.amount);
     }
-    return {'uniqueBikes': uniqueBikes, 'total': total};
+    return {'uniqueBikes': uniqueBikes, 'total': total, 'currency': CheckoutService().getCurrency()};
   }
 
   Future<void> setCustomerHandle(String handle) async {

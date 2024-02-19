@@ -248,6 +248,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             var data = snapshot.data as dynamic;
             var uniqueBikes = data['uniqueBikes'];
             var total = data['total'];
+            var currency = data['currency'];
 
             return Column(
               children: [
@@ -269,7 +270,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                   fontSize: 14,
                                 ),
                               ),
-                              Text("Price: ${uniqueBikes[i].amount} DKK"),
+                              Text("Price: ${uniqueBikes[i].amount} ${uniqueBikes[i].currency}"),
                             ]),
                             leading: CircleAvatar(
                               radius: 30,
@@ -301,7 +302,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   children: [
                     Container(
                       padding: EdgeInsets.all(40),
-                      child: Text("Total: $total DKK"),
+                      child: Text("Total: $total $currency"),
                     ),
                   ],
                 ),
@@ -398,7 +399,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               ),
             ),
           )),
-          Text('${bike.amount.toString()} DKK'),
+          Text('${bike.amount.toString()} ${bike.currency}'),
           IconButton(
             onPressed: () => {
               setState(() {
@@ -462,7 +463,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   0.0,
                 ),
                 child: new Text(
-                  "Price: ${bike.amount} DKK",
+                  "Price: ${bike.amount} ${bike.currency}",
                   style: new TextStyle(
                     fontSize: 12.0,
                     fontWeight: FontWeight.w400,
