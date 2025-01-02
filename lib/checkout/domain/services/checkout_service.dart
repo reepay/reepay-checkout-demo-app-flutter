@@ -139,7 +139,7 @@ class CheckoutService implements CheckoutRepository {
       Uri.parse("https://api.reepay.com/v1/customer/$customerHandle"),
     );
 
-    String encoded = base64.encode(utf8.encode("priv_b3aae30490f8f7792fc0ce659b2380f4"));
+    String encoded = base64.encode(utf8.encode(dotenv.env['REEPAY_PRIVATE_API_KEY'] as String));
     request.headers.set("content-type", "application/json");
     request.headers.set("accept", "application/json");
     request.headers.set("Authorization", encoded);

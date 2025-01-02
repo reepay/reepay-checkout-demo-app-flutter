@@ -203,6 +203,21 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               },
               child: Text("Checkout Docs"),
             ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CheckoutScreen(
+                      sessionData: Future.value({
+                        "url": dotenv.env['TEST_CHECKOUT_SESSION_URL'] as String,
+                      }),
+                    ),
+                  ),
+                );
+              },
+              child: Text("Test WebView"),
+            ),
             Spacer(),
             TextButton(
               onPressed: () {
