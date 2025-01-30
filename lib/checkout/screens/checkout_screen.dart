@@ -1,28 +1,40 @@
 // ignore_for_file: prefer_const_constructors
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:reepay_checkout_flutter_example/checkout/domain/models/checkout_state_enum.dart';
+import 'package:reepay_checkout_flutter_example/checkout/domain/models/user_action_enum.dart';
 import 'package:reepay_checkout_flutter_example/checkout/index.dart';
+import 'package:reepay_checkout_flutter_example/utils/event_parser.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({super.key});
+  final Future<Map<String, dynamic>>? sessionData;
+
+  const CheckoutScreen({super.key, this.sessionData});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-  late Future<Map> sessionData;
+  late WebViewController _controller;
+  late Future<Map<String, dynamic>> sessionData;
 
   @override
   void initState() {
     super.initState();
-    sessionData = CheckoutService().getSessionUrl(CheckoutProvider().customerHandle, CheckoutProvider().orderlines());
+
+    sessionData = widget.sessionData ??
+        CheckoutService().getSessionUrl(
+          CheckoutProvider().customerHandle,
+          CheckoutProvider().orderlines(),
+        );
   }
 
   @override
@@ -85,14 +97,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               onCancel();
               return NavigationDecision.prevent;
             } else if (request.url.contains("accept")) {
-              onAccept();
+              onAccept(hasCustomerInfo: true);
               return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;
           },
         ),
       )
+      ..addJavaScriptChannel('CheckoutChannel', onMessageReceived: (JavaScriptMessage message) {
+        _onMessageReceived(message);
+      })
       ..loadRequest(Uri.parse(sessionUrl));
+
+    _controller = controller;
     return controller;
   }
 
@@ -124,19 +141,112 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   /// accept handler
-  void onAccept() {
+  void onAccept({hasCustomerInfo = false}) {
     print("Payment success");
-    CheckoutService()
-        .updateCustomer(
-          customerHandle: CheckoutProvider().customerHandle,
-          customer: CheckoutProvider().customer,
-        )
-        .then((value) => print('Status - update customer: $value'));
+    if (hasCustomerInfo) {
+      CheckoutService()
+          .updateCustomer(
+            customerHandle: CheckoutProvider().customerHandle,
+            customer: CheckoutProvider().customer,
+          )
+          .then((value) => print('Status - update customer: $value'));
+    }
     CheckoutProvider().setCart([]);
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => CompletedScreen()),
     );
+  }
+
+  /// Handle incoming messages from WebView
+  void _onMessageReceived(JavaScriptMessage message) {
+    print("[_onMessageReceived]: ${message.message}");
+
+    Map<String, dynamic>? data;
+    try {
+      data = json.decode(message.message);
+      final eventName = data!['event'];
+      if (eventName is String) {
+        final event = EventParser.parseEvent(eventName);
+        if (event is EUserAction) {
+          _handleUserActions(data);
+        } else if (event is ECheckoutState) {
+          _handleEvents(data);
+        } else {
+          throw ArgumentError('Invalid event type: $data');
+        }
+      } else {
+        print('Undefined event: $data');
+      }
+    } catch (e) {
+      print('[_onMessageReceived] Error: $e');
+    }
+  }
+
+  void _handleEvents(data) {
+    ECheckoutState event = ECheckoutState.fromString(data['event']);
+    print('Event: $event');
+
+    switch (event) {
+      case ECheckoutState.init:
+        _controller.runJavaScriptReturningResult('navigator.userAgent').then((result) {
+          final userAgent = result.toString();
+          final customUserAgent = '$userAgent ReepayCheckoutDemoApp/1.0.0 (Flutter)';
+          final reply = {'userAgent': customUserAgent, 'isWebView': true};
+          final jsCode = '''
+            if (window.CheckoutChannel && typeof window.CheckoutChannel.resolveMessage === 'function') {
+                window.CheckoutChannel.resolveMessage(${jsonEncode(reply)});
+            } 
+          ''';
+          _controller.runJavaScript(jsCode);
+        }).catchError((error) {
+          print('Error retrieving user agent: $error');
+        });
+        break;
+      case ECheckoutState.open:
+      case ECheckoutState.close:
+        break;
+      case ECheckoutState.cancel:
+        onCancel();
+        break;
+      case ECheckoutState.accept:
+        onAccept();
+        break;
+      case ECheckoutState.error:
+        print('Error: $data');
+        break;
+      default:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Unknown event: $event')),
+        );
+        return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Event: $data')),
+    );
+  }
+
+  void _handleUserActions(data) {
+    EUserAction action = EUserAction.fromString(data['event']);
+    print('User Action: $action');
+
+    switch (action) {
+      case EUserAction.cardInputChange:
+        final reply = {'isWebViewChanged': true};
+        final jsCode = '''
+            if (window.CheckoutChannel && typeof window.CheckoutChannel.resolveMessage === 'function') {
+                window.CheckoutChannel.resolveMessage(${jsonEncode(reply)});
+            } 
+          ''';
+        _controller.runJavaScript(jsCode);
+        break;
+      default:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Unknown action: $action')),
+        );
+        return;
+    }
   }
 
   ///

@@ -27,13 +27,14 @@ flutter pub get
 - [Events](#events)
   - [Url path changes](#url-path-changes)
   - [Extra](#extra)
+  - [Handling events](#handling-events-newly-added-in-v110)
 - [Usage](#usage)
   - [Reepay Private API Key](#reepay-private-api-key)
   - [Custom URL schemes](#custom-url-schemes)
 
 ## Available Scripts
 
-This project is built with `Flutter version 3.19.0`. Before running your Flutter app, you must create iOS and Android platforms respectively.
+This project is built with `Flutter version 3.27.1 and Dart version 3.6.0`. Before running your Flutter app, you must create iOS and Android platforms respectively.
 
 ### flutter create ios platform
 
@@ -68,7 +69,7 @@ flutter run -d <device_id>
 ```
 
 ## Events
-In the app, we will use URL path changes as events that WebView listens to, thus checking whether URL contains `accept` or `cancel` in the path. 
+In the app, we will use URL path changes as events that WebView listens to, thus checking whether URL contains `accept` or `cancel` in the path. In version 1.1.0, we have introduced new event handling via postMessage from the WebView. Read more about handling events below.
 
 ### URL path changes
 As we are using WebView by passing session URL, we will receive response with as either Accept URL or Cancel URL as defined in the request body [docs](https://docs.reepay.com/reference/createchargesession):
@@ -83,6 +84,9 @@ In the WebView, we will listen to URL changes when the checkout has completed a 
 
 ### Extra
 For additional parameters to be passed, use query parameters in `accept_url` or `cancel_url`. For example, `https://webshop.com/decline/order-12345?myEvent=someValue&yourEvent=anotherValue`.
+
+### Handling events `Newly added in v1.1.0`
+The app will now receive events via postMessage from the WebView. The WebView will send a message with the event type and the event data. The app will then handle the event accordingly. See `checkout_screen.dart` for more details.
 
 ## Usage
 
