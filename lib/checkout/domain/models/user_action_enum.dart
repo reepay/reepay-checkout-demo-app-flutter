@@ -1,4 +1,4 @@
-// Based on: https://optimize-docs.billwerk.com/docs/useraction-enum
+// Based on: https://docs.frisbii.com/docs/useraction-enum
 
 enum EUserAction {
   cardInputChange('card_input_change');

@@ -51,7 +51,7 @@ class CheckoutService implements CheckoutRepository {
     return 'DKK';
   }
 
-  Future<Map<String, dynamic>> getSessionUrl(customerHandle, orderlines) async {
+  Future<Map<String, dynamic>> getSessionUrl(String customerHandle, List<Map<String, Object>> orderlines) async {
     var completer = Completer<Map<String, dynamic>>();
 
     String apiUrl = dotenv.env['REEPAY_CHECKOUT_API_SESSION_CHARGE'] ?? '';

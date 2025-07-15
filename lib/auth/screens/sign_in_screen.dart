@@ -99,7 +99,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: TextButton(
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: const Color(0xFF1cb080),
+                        backgroundColor: const Color(0xFFD1F811),
                         minimumSize: const Size.fromHeight(50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50.0),
@@ -125,7 +125,7 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   // dummy sign in
-  void _signIn(context) {
+  void _signIn(BuildContext context) {
     var email = emailController.text;
     var password = passwordController.text;
 
