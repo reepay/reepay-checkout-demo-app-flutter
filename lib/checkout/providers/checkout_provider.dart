@@ -47,7 +47,7 @@ class CheckoutProvider {
     this.customer = customer;
   }
 
-  dynamic getQuantities(cart) {
+  dynamic getQuantities(List<Bike> cart) {
     quantities = {};
     cart.forEach(
       ((item) => {

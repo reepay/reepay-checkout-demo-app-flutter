@@ -34,7 +34,7 @@ flutter pub get
 
 ## Available Scripts
 
-This project is built with `Flutter version 3.27.1 and Dart version 3.6.0`. Before running your Flutter app, you must create iOS and Android platforms respectively.
+This project is built with `Flutter version 3.32.6 and Dart version 3.8.1`. Before running your Flutter app, you must create iOS and Android platforms respectively.
 
 ### flutter create ios platform
 

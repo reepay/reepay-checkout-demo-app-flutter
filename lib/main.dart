@@ -32,7 +32,7 @@ Map<int, Color> color = {
   900: Color.fromRGBO(28, 176, 128, 1),
 };
 
-Future<void> _launchUrl(url) async {
+Future<void> _launchUrl(Uri url) async {
   if (!await launchUrl(url)) {
     throw 'Could not launch $url';
   }
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: MaterialColor(0xFF1cb080, color),
       ),
-      home: const MyHomePage(title: 'Reepay Bike Shop'),
+      home: const MyHomePage(title: 'Frisbii Bike Shop'),
       routes: {
         '/checkout': (context) => CheckoutScreen(),
         '/completed': (context) => CompletedScreen(),
@@ -131,19 +131,19 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Widget menu() {
     return Container(
       decoration: BoxDecoration(
-        color: Color(0xFF1c4c84),
+        color: Color(0xFF001E58),
       ),
       child: SafeArea(
         minimum: EdgeInsets.only(bottom: 20),
         child: Container(
-          color: Color(0xFF1c4c84),
+          color: Color(0xFF001E58),
           child: TabBar(
             controller: tabController,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
+            labelColor: Color(0xFFD1F811),
+            unselectedLabelColor: Colors.white,
             indicatorSize: TabBarIndicatorSize.tab,
             indicatorPadding: EdgeInsets.all(5.0),
-            indicatorColor: Colors.white,
+            indicatorColor: Color(0xFFD1F811),
             tabs: [
               Tab(
                 text: "Products",
@@ -191,14 +191,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             ),
             TextButton(
               onPressed: () {
-                final Uri url = Uri.parse('https://reference.reepay.com/api/');
+                final Uri url = Uri.parse('https://docs.frisbii.com/reference/introduction');
                 _launchUrl(url);
               },
               child: Text("API Reference"),
             ),
             TextButton(
               onPressed: () {
-                final Uri url = Uri.parse('https://docs.reepay.com/reference/reference-introduction');
+                final Uri url = Uri.parse('https://docs.frisbii.com/');
                 _launchUrl(url);
               },
               child: Text("Checkout Docs"),
@@ -229,7 +229,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 Navigator.of(context).push(
                   new MaterialPageRoute(
                     builder: (context) => MyHomePage(
-                      title: 'Reepay Bike Shop',
+                      title: 'Frisbii Bike Shop',
                     ),
                   ),
                 );
@@ -249,7 +249,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         width: 400,
         padding: EdgeInsets.only(left: 15, right: 15),
         child: FloatingActionButton.extended(
-          backgroundColor: Color(0xFF1cb080),
+          foregroundColor: Color(0xFF001E58),
+          backgroundColor: Color(0xFFD1F811),
           onPressed: () => {
             if (cart.isNotEmpty) {Navigator.pushNamed(context, '/customer-info')}
           },
@@ -296,7 +297,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                 "Quantity: ${uniqueBikes[i].quantity}",
                               ),
                               TextButton(
-                                child: const Text('Remove'),
+                                child: const Text(
+                                  'Remove',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                  ),
+                                ),
                                 onPressed: () {
                                   setState(() {
                                     var index = cart.indexWhere((element) => element.name == uniqueBikes[i].name);
@@ -339,7 +345,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               width: 400,
               padding: EdgeInsets.only(left: 15, right: 15),
               child: FloatingActionButton.extended(
-                backgroundColor: Color(0xFF1cb080),
+                foregroundColor: Color(0xFF001E58),
+                backgroundColor: Color(0xFFD1F811),
                 onPressed: () => {tabController.index = 2},
                 label: Text("Go to Cart"),
               ),
@@ -428,7 +435,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             },
             icon: Icon(
               Icons.remove_circle,
-              color: Color(0xFF1cb080),
+              color: Color(0xFF0057FF),
             ),
           ),
           Text("${bike.quantity}"),
@@ -442,7 +449,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             },
             icon: Icon(
               Icons.add_circle,
-              color: Color(0xFF1cb080),
+              color: Color(0xFF0057FF),
             ),
           ),
         ],

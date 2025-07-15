@@ -38,7 +38,7 @@ class _CompletedScreenState extends State<CompletedScreen> {
               child: TextButton(
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: const Color(0xFF1cb080),
+                  backgroundColor: const Color(0xFF28A745),
                   minimumSize: const Size.fromHeight(50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50.0),

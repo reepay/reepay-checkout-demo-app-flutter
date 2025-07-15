@@ -51,7 +51,7 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
     super.dispose();
   }
 
-  void _checkout(context) {
+  void _checkout(BuildContext context) {
     var customer = Customer();
     var names = fullnameController.text.trim().split(' ');
     customer.first_name = names[0];
@@ -98,7 +98,7 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
     );
   }
 
-  Widget customerForm(context) {
+  Widget customerForm(BuildContext context) {
     return SingleChildScrollView(
       child: Form(
         key: _formKey,
@@ -247,8 +247,8 @@ class _CustomerInfoScreenState extends State<CustomerInfoScreen> {
                   width: 400,
                   child: TextButton(
                     style: TextButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: const Color(0xFF1cb080),
+                      foregroundColor: const Color(0xFF001E58),
+                      backgroundColor: const Color(0xFFD1F811),
                       minimumSize: const Size.fromHeight(50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50.0),

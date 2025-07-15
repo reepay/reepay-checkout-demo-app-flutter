@@ -141,7 +141,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   /// accept handler
-  void onAccept({hasCustomerInfo = false}) {
+  void onAccept({bool hasCustomerInfo = false}) {
     print("Payment success");
     if (hasCustomerInfo) {
       CheckoutService()
@@ -183,7 +183,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
   }
 
-  void _handleEvents(data) {
+  void _handleEvents(dynamic data) {
     ECheckoutState event = ECheckoutState.fromString(data['event']);
     print('Event: $event');
 
@@ -227,7 +227,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  void _handleUserActions(data) {
+  void _handleUserActions(dynamic data) {
     EUserAction action = EUserAction.fromString(data['event']);
     print('User Action: $action');
 
